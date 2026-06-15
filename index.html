@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#005da7"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Stay Strong"/>
+<meta name="description" content="Recovery tracker and streak counter for building discipline"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="application-name" content="Stay Strong"/>
+<meta name="msapplication-TileColor" content="#005da7"/>
+<meta name="msapplication-TileImage" content="icons/icon-192.png"/>
+
+<title>Stay Strong</title>
+
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="icon" type="image/png" href="icons/icon-192.png"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f8f9fa; color: #191c1d; min-height: 100dvh; overflow-x: hidden; line-height: 1.5; }
+
+  :root {
+    --surface: #f8f9fa; --surface-dim: #d9dadb; --surface-bright: #f8f9fa;
+    --surface-container-lowest: #ffffff; --surface-container-low: #f3f4f5; --surface-container: #edeeef;
+    --surface-container-high: #e7e8e9; --surface-container-highest: #e1e3e4;
+    --on-surface: #191c1d; --on-surface-variant: #414751; --inverse-surface: #2e3132; --inverse-on-surface: #f0f1f2;
+    --outline: #717783; --outline-variant: #c1c7d3; --surface-tint: #0060ac;
+    --primary: #005da7; --on-primary: #ffffff; --primary-container: #2976c7; --on-primary-container: #fdfcff;
+    --inverse-primary: #a4c9ff; --secondary: #196a59; --on-secondary: #ffffff; --secondary-container: #a3eed8;
+    --on-secondary-container: #1f6e5d; --tertiary: #545d65; --on-tertiary: #ffffff; --tertiary-container: #6d767e;
+    --on-tertiary-container: #fcfcff; --error: #ba1a1a; --on-error: #ffffff; --error-container: #ffdad6;
+    --on-error-container: #93000a; --primary-fixed: #d4e3ff; --primary-fixed-dim: #a4c9ff; --on-primary-fixed: #001c39;
+    --on-primary-fixed-variant: #004883; --secondary-fixed: #a6f1db; --secondary-fixed-dim: #8ad5bf; --on-secondary-fixed: #002019;
+    --on-secondary-fixed-variant: #005142; --tertiary-fixed: #dbe4ed; --tertiary-fixed-dim: #bfc8d0; --on-tertiary-fixed: #141d23;
+    --on-tertiary-fixed-variant: #3f484f; --background: #f8f9fa; --on-background: #191c1d; --surface-variant: #e1e3e4;
+  }
+
+  .text-headline-xl-mobile { font-size: 28px; line-height: 36px; font-weight: 700; }
+  .text-headline-md { font-size: 20px; line-height: 28px; font-weight: 600; }
+  .text-headline-lg { font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.01em; }
+  .text-headline-xl { font-size: 32px; line-height: 40px; font-weight: 700; letter-spacing: -0.02em; }
+  .text-body-lg { font-size: 18px; line-height: 28px; font-weight: 400; }
+  .text-body-md { font-size: 16px; line-height: 24px; font-weight: 400; }
+  .text-body-sm { font-size: 14px; line-height: 20px; font-weight: 400; }
+  .text-label-md { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .text-xs { font-size: 10px; line-height: 14px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; }
+  .justify-center { justify-content: center; } .justify-between { justify-content: space-between; }
+  .justify-around { justify-content: space-around; } .flex-grow { flex-grow: 1; } .flex-shrink-0 { flex-shrink: 0; }
+  .grid { display: grid; } .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-6 { gap: 24px; } .gap-8 { gap: 32px; }
+  .space-y-2 > * + * { margin-top: 8px; } .space-y-3 > * + * { margin-top: 12px; } .space-y-4 > * + * { margin-top: 16px; }
+  .space-y-6 > * + * { margin-top: 24px; } .space-y-8 > * + * { margin-top: 32px; }
+
+  .relative { position: relative; } .absolute { position: absolute; } .fixed { position: fixed; }
+  .inset-0 { top: 0; right: 0; bottom: 0; left: 0; } .top-0 { top: 0; } .bottom-0 { bottom: 0; }
+  .left-1-2 { left: 50%; } .translate-x-1-2 { transform: translateX(-50%); }
+  .z-10 { z-index: 10; } .z-50 { z-index: 50; } .z-100 { z-index: 100; }
+
+  .w-full { width: 100%; } .w-10 { width: 40px; } .w-12 { width: 48px; } .w-16 { width: 64px; } .w-24 { width: 96px; }
+  .w-64 { width: 256px; } .h-1 { height: 4px; } .h-1-5 { height: 6px; } .h-2 { height: 8px; } .h-2-5 { height: 10px; }
+  .h-6 { height: 24px; } .h-10 { height: 40px; } .h-12 { height: 48px; } .h-16 { height: 64px; } .h-64 { height: 256px; }
+  .h-full { height: 100%; } .min-h-screen { min-height: 100dvh; } .max-w-md { max-width: 448px; }
+  .max-w-sm { max-width: 384px; } .max-w-2xl { max-width: 672px; } .mx-auto { margin-left: auto; margin-right: auto; }
+
+  .p-1 { padding: 4px; } .p-2 { padding: 8px; } .p-3 { padding: 12px; } .p-4 { padding: 16px; } .p-5 { padding: 20px; } .p-6 { padding: 24px; }
+  .px-3 { padding-left: 12px; padding-right: 12px; } .px-4 { padding-left: 16px; padding-right: 16px; } .px-5 { padding-left: 20px; padding-right: 20px; }
+  .py-1 { padding-top: 4px; padding-bottom: 4px; } .py-2 { padding-top: 8px; padding-bottom: 8px; }
+  .py-3 { padding-top: 12px; padding-bottom: 12px; } .py-4 { padding-top: 16px; padding-bottom: 16px; }
+  .pt-20 { padding-top: 80px; } .pt-24 { padding-top: 96px; } .pb-28 { padding-bottom: 112px; } .pb-32 { padding-bottom: 128px; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+  .mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; }
+  .mt-6 { margin-top: 24px; } .mt-8 { margin-top: 32px; } .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; }
+  .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; } .mb-8 { margin-bottom: 32px; }
+  .mr-1 { margin-right: 4px; } .ml-1 { margin-left: 4px; } .ml-auto { margin-left: auto; } .self-end { align-self: flex-end; }
+
+  .text-center { text-align: center; } .text-right { text-align: right; } .whitespace-nowrap { white-space: nowrap; }
+  .italic { font-style: italic; } .font-bold { font-weight: 700; } .uppercase { text-transform: uppercase; }
+  .tracking-wider { letter-spacing: 0.05em; } .tracking-widest { letter-spacing: 0.1em; } .leading-relaxed { line-height: 1.625; }
+  .rounded-lg { border-radius: 8px; } .rounded-xl { border-radius: 12px; } .rounded-2xl { border-radius: 16px; } .rounded-full { border-radius: 9999px; }
+  .rounded-t-xl { border-radius: 12px 12px 0 0; } .border { border: 1px solid; } .border-l-4 { border-left: 4px solid; }
+  .border-b { border-bottom: 1px solid; } .border-none { border: none; } .outline-none { outline: none; }
+  .resize-none { resize: none; } .overflow-hidden { overflow: hidden; } .cursor-pointer { cursor: pointer; }
+  .pointer-events-none { pointer-events: none; } .hidden { display: none !important; }
+  .opacity-0 { opacity: 0; } .opacity-30 { opacity: 0.3; } .opacity-50 { opacity: 0.5; } .opacity-60 { opacity: 0.6; }
+  .opacity-70 { opacity: 0.7; } .opacity-90 { opacity: 0.9; } .grayscale { filter: grayscale(100%); }
+  .backdrop-blur-md { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+  .bg-surface { background: var(--surface); } .bg-surface-container-lowest { background: var(--surface-container-lowest); }
+  .bg-surface-container-low { background: var(--surface-container-low); } .bg-surface-container { background: var(--surface-container); }
+  .bg-surface-container-high { background: var(--surface-container-high); } .bg-primary { background: var(--primary); }
+  .bg-primary-container { background: var(--primary-container); } .bg-primary-fixed { background: var(--primary-fixed); }
+  .bg-secondary { background: var(--secondary); } .bg-secondary-container { background: var(--secondary-container); }
+  .bg-error { background: var(--error); } .bg-error-container { background: var(--error-container); }
+  .bg-inverse-surface { background: var(--inverse-surface); } .bg-on-primary { background: var(--on-primary); }
+  .bg-transparent { background: transparent; } .bg-white-75 { background: rgba(255,255,255,0.75); }
+  .bg-white-80 { background: rgba(255,255,255,0.8); } .bg-primary-10 { background: rgba(0,93,167,0.1); }
+  .bg-secondary-container-20 { background: rgba(163,238,216,0.2); } .bg-on-surface-40 { background: rgba(25,28,29,0.4); }
+
+  .text-primary { color: var(--primary); } .text-secondary { color: var(--secondary); } .text-tertiary { color: var(--tertiary); }
+  .text-error { color: var(--error); } .text-on-surface { color: var(--on-surface); } .text-on-surface-variant { color: var(--on-surface-variant); }
+  .text-on-primary { color: var(--on-primary); } .text-on-secondary { color: var(--on-secondary); }
+  .text-on-secondary-container { color: var(--on-secondary-container); } .text-on-primary-fixed { color: var(--on-primary-fixed); }
+  .text-inverse-on-surface { color: var(--inverse-on-surface); } .text-outline { color: var(--outline); }
+  .text-white { color: #fff; } .text-white-40 { color: rgba(255,255,255,0.4); }
+
+  .border-outline-variant { border-color: var(--outline-variant); } .border-surface-variant { border-color: var(--surface-variant); }
+  .border-secondary { border-color: var(--secondary); } .border-primary { border-color: var(--primary); }
+  .border-transparent { border-color: transparent; } .border-white-30 { border-color: rgba(255,255,255,0.3); }
+  .border-white-40 { border-color: rgba(255,255,255,0.4); }
+
+  .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); } .shadow-md { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); }
+  .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); }
+  .shadow-ambient { box-shadow: 0 4px 20px rgba(71,85,105,0.05); } .shadow-nav { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+  .shadow-success { box-shadow: 0 4px 20px rgba(25,106,89,0.1); } .shadow-primary-glow { box-shadow: 0 8px 30px rgba(0,93,167,0.12); }
+  .shadow-bolt { box-shadow: 0 0 15px rgba(0,93,167,0.4); } .ring-primary-10 { box-shadow: 0 0 0 2px rgba(0,93,167,0.1); }
+  .ring-bg { box-shadow: 0 0 0 4px var(--background); }
+
+  .glass-card { background: rgba(255,255,255,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.4); }
+  .glass-card-strong { background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); }
+  .timeline-line { width: 4px; background: var(--surface-container-highest); border-radius: 2px; }
+  .timeline-line-active { width: 4px; background: linear-gradient(to bottom, var(--secondary) 0%, var(--secondary) 66%, var(--primary) 100%); border-radius: 2px; }
+  .success-pattern { background-image: radial-gradient(var(--secondary) 0.5px, transparent 0.5px); background-size: 8px 8px; }
+  .progress-ring-circle { transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1); transform: rotate(-90deg); transform-origin: 50% 50%; }
+  .custom-calendar::-webkit-calendar-picker-indicator { filter: invert(0.4); cursor: pointer; }
+
+  .page { display: none; animation: fadeIn 0.3s ease-out; } .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .btn-press:active { transform: scale(0.96); } .card-press:active { transform: scale(0.98); }
+  .card-press { transition: transform 0.15s ease; } .btn-press { transition: transform 0.15s ease, background 0.2s, box-shadow 0.2s; }
+  .hover-bg-surface-low:hover { background: var(--surface-container-low); } .hover-bg-error:hover { background: var(--error-container); }
+  .hover-brightness:hover { filter: brightness(1.1); } .hover-text-primary:hover { color: var(--primary); }
+  .transition-all { transition: all 0.2s ease; } .transition-colors { transition: color 0.2s, background 0.2s; }
+  .transition-transform { transition: transform 0.15s ease; } .transition-opacity { transition: opacity 0.3s ease; }
+  .dur-150 { transition-duration: 150ms; } .dur-200 { transition-duration: 200ms; } .dur-300 { transition-duration: 300ms; } .dur-1000 { transition-duration: 1000ms; }
+
+  .toast-enter { animation: toastIn 0.3s ease-out forwards; } .toast-exit { animation: toastOut 0.3s ease-in forwards; }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @keyframes toastOut { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, 20px); } }
+  .modal-enter { animation: modalIn 0.25s ease-out forwards; }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .confetti { position: fixed; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; z-index: 9999; animation: confettiFall 1.5s ease-out forwards; }
+  @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(300px) rotate(720deg); opacity: 0; } }
+  @keyframes breathe { 0%, 100% { box-shadow: 0 0 0 0 rgba(0,93,167,0.15); } 50% { box-shadow: 0 0 0 8px rgba(0,93,167,0.05); } }
+  .breathe { animation: breathe 2s ease-in-out infinite; }
+  @keyframes softPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+  .soft-pulse { animation: softPulse 2s ease-in-out infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .animate-spin { animation: spin 1s linear infinite; } .animate-pulse { animation: softPulse 2s ease-in-out infinite; }
+
+  .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-weight: 400; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; -webkit-font-feature-settings: 'liga'; -webkit-font-smoothing: antialiased; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .material-symbols-filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .text-xl { font-size: 20px; } .text-2xl { font-size: 24px; } .text-4xl { font-size: 40px; } .text-28 { font-size: 28px; } .text-120 { font-size: 120px; }
+
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 4px; }
+  input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,93,167,0.2); }
+
+  .nav-btn { transition: all 0.2s ease; padding: 4px 16px; border-radius: 9999px; }
+  .nav-btn.active { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .nav-btn:not(.active) { color: var(--on-surface-variant); }
+  .nav-btn:not(.active):hover { color: var(--primary); }
+
+  @media (min-width: 768px) { .md-grid-cols-2 { grid-template-columns: repeat(2, 1fr); } .md-w-80 { width: 320px; } .md-h-80 { height: 320px; } }
+
+  .header-glass { background: rgba(248,249,250,0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .nav-glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+  /* PWA Install Prompt */
+  .install-prompt { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,93,167,0.3); z-index: 200; display: none; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .install-prompt.show { display: flex; animation: slideUp 0.3s ease-out; }
+  @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+  .install-prompt button { background: white; color: var(--primary); border: none; padding: 6px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- PWA Install Prompt -->
+<div id="install-prompt" class="install-prompt" onclick="installPWA()">
+  <span class="material-symbols-outlined" style="font-size: 20px;">download</span>
+  <span>Install Stay Strong</span>
+  <button onclick="event.stopPropagation(); dismissInstall()">Later</button>
+</div>
+
+<!-- ========== TOP APP BAR ========== -->
+<header class="fixed top-0 w-full z-50 header-glass shadow-sm flex justify-between items-center px-5 h-16">
+  <div class="flex items-center gap-2 btn-press cursor-pointer" onclick="showToast('Stay Strong v1.0')">
+    <span class="material-symbols-outlined text-primary text-2xl">shield_with_heart</span>
+    <h1 class="text-headline-md font-bold text-primary">Stay Strong</h1>
+  </div>
+  <button id="header-settings-btn" onclick="goToSettings()" class="w-10 h-10 flex items-center justify-center rounded-full hover-bg-surface-low transition-colors btn-press dur-150" title="Settings">
+    <span class="material-symbols-outlined text-on-surface-variant text-xl">settings</span>
+  </button>
+</header>
+
+<!-- ========== HOME PAGE ========== -->
+<main id="page-home" class="page active flex-grow pt-20 pb-28 px-5">
+  <div class="w-full max-w-md mx-auto flex flex-col items-center space-y-8">
+
+    <!-- Circular Progress Ring -->
+    <div class="relative flex flex-col items-center justify-center mt-4">
+      <div class="relative w-64 h-64">
+        <svg class="w-full h-full" viewBox="0 0 100 100">
+          <circle style="stroke: var(--surface-container); fill: transparent;" cx="50" cy="50" r="44" stroke-width="6"/>
+          <circle id="progress-ring" class="progress-ring-circle" style="stroke: var(--primary); fill: transparent; stroke-dasharray: 276.46; stroke-dashoffset: 276.46; stroke-linecap: round;" cx="50" cy="50" r="44" stroke-width="6"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span id="home-days" class="text-headline-xl-mobile text-on-surface">0</span>
+          <span class="text-label-md text-on-surface-variant tracking-widest mt-1">Days Strong</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Section -->
+    <div class="w-full space-y-4">
+      <button id="restart-btn" onclick="openRelapseModal()" class="btn-press w-full py-4 px-5 bg-surface-container-lowest border border-outline-variant text-error text-headline-md rounded-xl shadow-sm flex items-center justify-center gap-3 hover-bg-error transition-all dur-200">
+        <span class="material-symbols-outlined">restart_alt</span>
+        Relapse
+      </button>
+      <p class="text-center text-body-sm text-on-surface-variant px-3">
+        Recovery is not linear. Be kind to yourself if you need to start over.
+      </p>
+
+      <!-- Reflection Notes -->
+      <div id="reflection-area" class="glass-card p-4 rounded-xl border border-surface-variant flex flex-col gap-3 hidden">
+        <label class="text-label-md text-on-surface-variant font-bold tracking-widest" for="reflection-notes">Reflection Notes</label>
+        <textarea id="reflection-notes" class="w-full bg-transparent border-none text-body-md text-on-surface placeholder:text-on-surface-variant resize-none outline-none" placeholder="What triggered this? How can you prepare for next time?" rows="3" style="border: none; background: transparent;"></textarea>
+        <button onclick="saveReflection()" class="self-end px-4 py-2 bg-primary text-on-primary rounded-lg text-label-md uppercase font-bold btn-press transition-transform">Save Note</button>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 gap-3 w-full">
+      <div class="glass-card p-4 rounded-xl border border-surface-variant flex flex-col gap-1 card-press transition-transform">
+        <span class="text-label-md text-on-surface-variant">Best Streak</span>
+        <span id="best-streak" class="text-headline-md text-secondary">0 Days</span>
+      </div>
+      <div class="glass-card p-4 rounded-xl border border-surface-variant flex flex-col gap-1 card-press transition-transform">
+        <span class="text-label-md text-on-surface-variant">Total Days</span>
+        <span id="total-days" class="text-headline-md text-primary">0 Days</span>
+      </div>
+    </div>
+
+    <!-- Motivational Quote -->
+    <div class="mt-8 text-center px-6 py-8">
+      <div class="w-12 h-1 bg-primary-container mx-auto mb-4 rounded-full opacity-30"></div>
+      <blockquote id="daily-quote" class="text-body-lg italic text-on-surface leading-relaxed">
+        "Discipline is choosing between what you want now and what you want most."
+      </blockquote>
+      <p class="mt-2 text-label-md text-on-surface-variant font-bold tracking-widest">Stay Strong</p>
+    </div>
+  </div>
+</main>
+
+<!-- ========== BENEFITS PAGE ========== -->
+<main id="page-benefits" class="page flex-grow pt-20 pb-28 px-5">
+  <div class="max-w-md mx-auto w-full">
+
+    <section class="mb-8 text-center">
+      <h2 class="text-headline-xl-mobile mb-1">Your Path Forward</h2>
+      <p class="text-on-surface-variant text-body-md">Witness the transformation as your discipline takes root and flourishes.</p>
+    </section>
+
+    <!-- Milestone Progress Overview Card -->
+    <div class="glass-card rounded-xl p-6 mb-8 shadow-sm flex items-center justify-between overflow-hidden relative card-press transition-transform cursor-pointer" onclick="showToast('Keep going! You are doing great.')">
+      <div class="z-10">
+        <h3 class="text-label-md text-primary tracking-wider mb-1">Current Streak</h3>
+        <div class="flex items-baseline gap-1">
+          <span id="benefits-streak" class="text-headline-xl-mobile">0</span>
+          <span class="text-on-surface-variant text-body-md">Days</span>
+        </div>
+      </div>
+      <div class="relative z-10 text-right">
+        <span class="text-label-md text-secondary block mb-1">Next Reward</span>
+        <span id="next-reward" class="text-headline-md text-on-surface">Reduced Anxiety</span>
+      </div>
+      <div class="absolute -right-4 top-0 h-full w-24 bg-secondary-container-20 opacity-50 pointer-events-none"></div>
+    </div>
+
+    <!-- Vertical Timeline -->
+    <div class="relative">
+      <div class="absolute left-22 top-4 bottom-4 timeline-line" style="left: 22px;"></div>
+      <div id="timeline-active" class="absolute left-22 top-4 h-0 timeline-line-active transition-all dur-1000" style="left: 22px;"></div>
+      <div id="milestones-container" class="space-y-6">
+        <!-- Milestones injected by JS -->
+      </div>
+    </div>
+
+    <!-- Motivational Card -->
+    <div class="mt-8 p-6 rounded-xl bg-primary text-on-primary shadow-lg overflow-hidden relative card-press transition-transform cursor-pointer" onclick="showToast('Scientific report coming soon!')">
+      <div class="relative z-10">
+        <h3 class="text-headline-md mb-1">The long road pays off.</h3>
+        <p class="text-body-sm opacity-90">Every day of resistance is a brick in the fortress of your new self. Keep going, the clarity is coming.</p>
+        <button class="mt-4 px-4 py-2 bg-on-primary text-primary rounded-lg font-bold text-label-md uppercase btn-press transition-transform">View full scientific report</button>
+      </div>
+      <div class="absolute -right-5 -bottom-5 opacity-10">
+        <span class="material-symbols-outlined text-120">military_tech</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== SETTINGS PAGE ========== -->
+<main id="page-settings" class="page flex-grow pt-20 pb-28 px-5">
+  <div class="max-w-2xl mx-auto w-full">
+
+    <div class="flex items-center gap-3 mb-6">
+      <button onclick="navigateTo('home')" class="w-10 h-10 flex items-center justify-center rounded-full hover-bg-surface-low transition-colors btn-press" title="Back to Home">
+        <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+      </button>
+      <div>
+        <h2 class="text-headline-xl-mobile text-on-surface mb-1">Journey Settings</h2>
+        <p class="text-body-md text-on-surface-variant">Adjust your milestone tracking and start dates.</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-3">
+      <!-- Start Date Management Card -->
+      <div class="glass-card-strong bg-surface-container-lowest p-4 rounded-xl shadow-ambient border border-white-30">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="bg-primary-10 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-primary">calendar_today</span>
+          </div>
+          <div>
+            <h3 class="text-headline-md text-on-surface">Set Start Date</h3>
+            <p class="text-label-md text-on-surface-variant">Back-date your recovery journey</p>
+          </div>
+        </div>
+        <div class="space-y-6">
+          <div class="relative">
+            <label class="block text-label-md text-primary mb-1 tracking-wider" for="start-date">Original Commencement Date</label>
+            <input id="start-date" type="date" class="custom-calendar w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-body-md transition-all outline-none"/>
+          </div>
+          <div class="bg-surface-container rounded-lg p-4 border-l-4 border-secondary">
+            <div class="flex gap-3">
+              <span class="material-symbols-outlined text-secondary">info</span>
+              <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                Back-dating allows you to sync your app progress with your actual day one. All current streaks and benefits will recalculate automatically based on this new anchor.
+              </p>
+            </div>
+          </div>
+          <button id="save-button" onclick="saveStartDate()" class="btn-press w-full bg-primary text-on-primary py-3 px-4 rounded-xl text-headline-md shadow-md hover-brightness flex justify-center items-center gap-3 transition-all">
+            <span id="save-btn-text">Save Journey Start</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Visual Context Card -->
+      <div class="grid grid-cols-1 md-grid-cols-2 gap-3">
+        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant flex flex-col justify-between card-press transition-transform">
+          <span class="text-label-md text-tertiary mb-4">CURRENT PROGRESS</span>
+          <div>
+            <span id="settings-days" class="text-headline-xl text-primary">0</span>
+            <span class="text-body-md text-on-surface-variant"> Days Sober</span>
+          </div>
+          <div class="mt-4 h-1-5 w-full bg-surface-container rounded-full overflow-hidden">
+            <div id="settings-progress" class="h-full bg-secondary rounded-full transition-all dur-1000" style="width: 0%"></div>
+          </div>
+        </div>
+        <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant flex flex-col justify-center items-center text-center">
+          <div class="w-16 h-16 mb-4 bg-primary-10 rounded-2xl flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-4xl">event_available</span>
+          </div>
+          <p class="text-body-sm text-on-surface-variant px-3">Date changes are reflected in your profile timeline instantly.</p>
+        </div>
+      </div>
+
+      <!-- Settings List -->
+      <div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant">
+        <div class="p-4 border-b border-outline-variant flex justify-between items-center hover-bg-surface-low transition-colors cursor-pointer card-press" onclick="toggleReminder()">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+            <span class="text-body-md">Anniversary Reminders</span>
+          </div>
+          <div id="reminder-toggle" class="w-10 h-6 rounded-full relative p-1 transition-colors" style="background: var(--secondary-container);">
+            <div id="reminder-knob" class="w-4 h-4 rounded-full absolute transition-all" style="right: 4px; background: var(--secondary);"></div>
+          </div>
+        </div>
+        <div class="p-4 border-b border-outline-variant flex justify-between items-center hover-bg-surface-low transition-colors cursor-pointer card-press" onclick="showToast('History logs coming soon!')">
+          <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-on-surface-variant">history</span>
+            <span class="text-body-md">Journey History Logs</span>
+          </div>
+          <span class="material-symbols-outlined text-outline">chevron_right</span>
+        </div>
+        <div class="p-4 flex justify-between items-center hover-bg-surface-low transition-colors cursor-pointer card-press" onclick="openResetModal()">
+          <div class="flex items-center gap-4 text-error">
+            <span class="material-symbols-outlined">delete_forever</span>
+            <span class="text-body-md">Reset All Data</span>
+          </div>
+          <span class="material-symbols-outlined text-outline">chevron_right</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== BOTTOM NAVIGATION ========== -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe nav-glass shadow-nav rounded-t-xl">
+  <button onclick="navigateTo('home')" id="nav-home" class="nav-btn flex flex-col items-center justify-center btn-press transition-transform dur-200">
+    <span class="material-symbols-outlined text-xl">dashboard</span>
+    <span class="text-label-md mt-0-5">Home</span>
+  </button>
+  <button onclick="navigateTo('benefits')" id="nav-benefits" class="nav-btn flex flex-col items-center justify-center btn-press transition-transform dur-200">
+    <span class="material-symbols-outlined text-xl">military_tech</span>
+    <span class="text-label-md mt-0-5">Benefits</span>
+  </button>
+  <button onclick="navigateTo('settings')" id="nav-settings" class="nav-btn flex flex-col items-center justify-center btn-press transition-transform dur-200">
+    <span class="material-symbols-outlined text-xl">person</span>
+    <span class="text-label-md mt-0-5">Profile</span>
+  </button>
+</nav>
+
+<!-- ========== RELAPSE MODAL ========== -->
+<div id="relapse-modal" class="fixed inset-0 z-100 flex items-center justify-center p-5 hidden" style="background: rgba(25,28,29,0.4); opacity: 0; transition: opacity 0.3s ease;">
+  <div class="bg-surface p-6 rounded-xl shadow-lg w-full max-w-sm text-center border border-outline-variant modal-enter">
+    <div class="w-12 h-12 bg-error-container rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-error text-2xl">warning</span>
+    </div>
+    <h3 class="text-headline-lg font-bold text-on-surface mb-1">Confirm Reset?</h3>
+    <p class="text-body-md text-on-surface-variant mb-6">Are you sure you want to restart your streak? This action cannot be undone. Your reflection notes will be saved.</p>
+    <div class="flex flex-col gap-3">
+      <button onclick="confirmRelapse()" class="btn-press w-full py-4 bg-error text-on-error rounded-lg font-bold text-body-md">Yes, Reset Streak</button>
+      <button onclick="closeRelapseModal()" class="btn-press w-full py-4 border border-outline-variant text-on-surface rounded-lg font-bold text-body-md">Keep Going</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== RESET ALL DATA MODAL ========== -->
+<div id="reset-modal" class="fixed inset-0 z-100 flex items-center justify-center p-5 hidden" style="background: rgba(25,28,29,0.4); opacity: 0; transition: opacity 0.3s ease;">
+  <div class="bg-surface p-6 rounded-xl shadow-lg w-full max-w-sm text-center border border-outline-variant modal-enter">
+    <div class="w-12 h-12 bg-error-container rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-symbols-outlined text-error text-2xl">delete_forever</span>
+    </div>
+    <h3 class="text-headline-lg font-bold text-on-surface mb-1">Delete Everything?</h3>
+    <p class="text-body-md text-on-surface-variant mb-6">This will permanently erase all your progress, streaks, and notes. This cannot be undone.</p>
+    <div class="flex flex-col gap-3">
+      <button onclick="confirmResetAll()" class="btn-press w-full py-4 bg-error text-on-error rounded-lg font-bold text-body-md">Delete All Data</button>
+      <button onclick="closeResetModal()" class="btn-press w-full py-4 border border-outline-variant text-on-surface rounded-lg font-bold text-body-md">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TOAST NOTIFICATION ========== -->
+<div id="toast" class="fixed bottom-24 left-1-2 translate-x-1-2 bg-inverse-surface text-inverse-on-surface px-6 py-2 rounded-full shadow-lg opacity-0 pointer-events-none z-100 flex items-center gap-3 whitespace-nowrap" style="transform: translateX(-50%) translateY(20px); transition: all 0.3s ease;">
+  <span class="material-symbols-outlined text-secondary-fixed">check_circle</span>
+  <span id="toast-message" class="text-body-sm">Notification</span>
+</div>
+
+<script>
+// ==================== DATA ====================
+const MILESTONES = [
+  { day: 1, title: "First Step", desc: "The hardest part is beginning. You have chosen the path of discipline." },
+  { day: 3, title: "Increased Energy", desc: "Metabolic pathways begin to stabilize, leading to a noticeable lift in physical stamina and mental alertness." },
+  { day: 7, title: "Better Focus", desc: "Brain fog begins to dissipate as dopamine receptors start their delicate process of recalibration." },
+  { day: 14, title: "Reduced Anxiety", desc: "Deep emotional regulation improves. You start finding a calm center amidst the daily storms." },
+  { day: 30, title: "Physical Vitality", desc: "A surge in overall well-being. Sleep patterns normalize and muscle recovery reaches peak efficiency." },
+  { day: 60, title: "Emotional Balance", desc: "Mood swings stabilize. You find yourself responding rather than reacting to daily stressors." },
+  { day: 90, title: "Mental Clarity", desc: "The ultimate reset. Your brain's reward system is fully primed for high-level creative and analytical output." },
+  { day: 180, title: "New Identity", desc: "This is no longer a streak, it is who you are. The old habits feel foreign and distant." },
+  { day: 365, title: "One Year Strong", desc: "A full orbit around the sun. You have proven to yourself that lasting change is possible." }
+];
+
+const QUOTES = [
+  "Discipline is choosing between what you want now and what you want most.",
+  "The pain of discipline is nothing like the pain of disappointment.",
+  "Small steps every day lead to massive changes over time.",
+  "Your future self is watching you right now through memories.",
+  "Strength does not come from what you can do. It comes from overcoming what you once thought you could not.",
+  "Fall seven times, stand up eight.",
+  "Progress, not perfection. Every day is a new chance.",
+  "The only bad workout is the one that did not happen. The only bad day is giving up."
+];
+
+let appState = { startDate: null, bestStreak: 0, totalDays: 0, reminders: true, reflections: [], lastRelapse: null };
+let currentPage = 'home';
+let toastTimeout;
+let deferredPrompt = null;
+
+// ==================== PWA INSTALL ====================
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-prompt').classList.add('show');
+});
+
+function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      showToast('Stay Strong installed!');
+    }
+    deferredPrompt = null;
+    document.getElementById('install-prompt').classList.remove('show');
+  });
+}
+
+function dismissInstall() {
+  document.getElementById('install-prompt').classList.remove('show');
+  localStorage.setItem('staystrong_install_dismissed', Date.now());
+}
+
+// ==================== SERVICE WORKER ====================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then((reg) => {
+    console.log('SW registered:', reg.scope);
+  }).catch((err) => {
+    console.log('SW registration failed:', err);
+  });
+}
+
+// ==================== INIT ====================
+function init() {
+  loadState();
+  if (!appState.startDate) {
+    const today = new Date();
+    const twelveDaysAgo = new Date(today);
+    twelveDaysAgo.setDate(today.getDate() - 12);
+    appState.startDate = twelveDaysAgo.toISOString().split('T')[0];
+    saveState();
+  }
+  document.getElementById('start-date').value = appState.startDate;
+  updateAllScreens();
+  setupEventListeners();
+  updateNavStyles('home');
+  if (!localStorage.getItem('staystrong_welcomed')) {
+    showToast('Welcome to Stay Strong!');
+    localStorage.setItem('staystrong_welcomed', 'true');
+  }
+  const dismissed = localStorage.getItem('staystrong_install_dismissed');
+  if (dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000) {
+    document.getElementById('install-prompt').classList.remove('show');
+  }
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('staystrong_state');
+    if (saved) appState = JSON.parse(saved);
+  } catch (e) { console.error('Failed to load state:', e); }
+}
+
+function saveState() {
+  try { localStorage.setItem('staystrong_state', JSON.stringify(appState)); }
+  catch (e) { console.error('Failed to save state:', e); }
+}
+
+// ==================== NAVIGATION ====================
+function navigateTo(page) {
+  if (page === currentPage) return;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  updateNavStyles(page);
+  currentPage = page;
+  if (page === 'benefits') renderMilestones();
+  if (page === 'settings') updateSettingsScreen();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToSettings() {
+  navigateTo('settings');
+}
+
+function updateNavStyles(activePage) {
+  ['home', 'benefits', 'settings'].forEach(page => {
+    const btn = document.getElementById('nav-' + page);
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (page === activePage) {
+      btn.classList.add('active');
+      btn.classList.remove('text-on-surface-variant');
+      icon.classList.add('material-symbols-filled');
+    } else {
+      btn.classList.remove('active');
+      btn.classList.add('text-on-surface-variant');
+      icon.classList.remove('material-symbols-filled');
+    }
+  });
+}
+
+// ==================== CALCULATIONS ====================
+function getDaysSober() {
+  if (!appState.startDate) return 0;
+  const start = new Date(appState.startDate + 'T00:00:00');
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.floor((now - start) / (1000 * 60 * 60 * 24)));
+}
+
+function getNextMilestone() {
+  const days = getDaysSober();
+  for (let m of MILESTONES) { if (m.day > days) return m; }
+  return MILESTONES[MILESTONES.length - 1];
+}
+
+function getCurrentMilestone() {
+  const days = getDaysSober();
+  let current = MILESTONES[0];
+  for (let m of MILESTONES) { if (m.day <= days) current = m; }
+  return current;
+}
+
+function getMilestoneProgress(milestone) {
+  const days = getDaysSober();
+  const idx = MILESTONES.indexOf(milestone);
+  const prevMilestone = MILESTONES[idx - 1] || { day: 0 };
+  const range = milestone.day - prevMilestone.day;
+  const progress = days - prevMilestone.day;
+  return Math.min(100, Math.max(0, (progress / range) * 100));
+}
+
+// ==================== SCREEN UPDATES ====================
+function updateAllScreens() {
+  const days = getDaysSober();
+  const nextMilestone = getNextMilestone();
+
+  document.getElementById('home-days').textContent = days;
+  document.getElementById('best-streak').textContent = appState.bestStreak + ' Days';
+  document.getElementById('total-days').textContent = appState.totalDays + ' Days';
+
+  const circle = document.getElementById('progress-ring');
+  const circumference = 276.46;
+  const prevMilestone = MILESTONES[MILESTONES.indexOf(nextMilestone) - 1] || { day: 0 };
+  const range = nextMilestone.day - prevMilestone.day;
+  const progress = days - prevMilestone.day;
+  const percent = Math.min(1, Math.max(0, progress / range));
+  circle.style.strokeDashoffset = circumference - (percent * circumference);
+
+  document.getElementById('benefits-streak').textContent = days;
+  document.getElementById('next-reward').textContent = nextMilestone.title;
+
+  updateSettingsScreen();
+
+  const quoteIndex = days % QUOTES.length;
+  document.getElementById('daily-quote').textContent = '"' + QUOTES[quoteIndex] + '"';
+}
+
+function updateSettingsScreen() {
+  const days = getDaysSober();
+  document.getElementById('settings-days').textContent = days;
+  document.getElementById('settings-progress').style.width = Math.min(100, (days / 365) * 100) + '%';
+
+  const toggle = document.getElementById('reminder-toggle');
+  const knob = document.getElementById('reminder-knob');
+  if (appState.reminders) {
+    toggle.style.background = 'var(--secondary-container)';
+    knob.style.right = '4px';
+    knob.style.background = 'var(--secondary)';
+  } else {
+    toggle.style.background = 'var(--surface-container-high)';
+    knob.style.right = '20px';
+    knob.style.background = 'var(--outline)';
+  }
+}
+
+// ==================== MILESTONES ====================
+function renderMilestones() {
+  const container = document.getElementById('milestones-container');
+  const days = getDaysSober();
+
+  container.innerHTML = MILESTONES.map((m, index) => {
+    const isUnlocked = days >= m.day;
+    const isCurrent = !isUnlocked && (index === 0 || days >= MILESTONES[index - 1].day);
+    const isLocked = !isUnlocked && !isCurrent;
+
+    let iconHtml, iconClass, cardClass;
+    if (isUnlocked) {
+      iconHtml = '<span class="material-symbols-outlined text-28" style="font-variation-settings: 'FILL' 1;">check_circle</span>';
+      iconClass = 'bg-secondary text-on-secondary shadow-lg ring-bg';
+      cardClass = 'bg-surface-container-lowest rounded-xl p-4 shadow-success border-l-4 border-secondary flex-grow relative overflow-hidden';
+    } else if (isCurrent) {
+      iconHtml = '<span class="material-symbols-outlined text-28 animate-pulse" style="font-variation-settings: 'FILL' 1;">bolt</span>';
+      iconClass = 'bg-primary text-on-primary shadow-bolt ring-bg breathe';
+      cardClass = 'bg-surface-container-lowest rounded-xl p-4 shadow-primary-glow border-l-4 border-primary flex-grow ring-primary-10';
+    } else {
+      iconHtml = '<span class="material-symbols-outlined text-24">lock</span>';
+      iconClass = 'bg-surface-container-high text-outline ring-bg grayscale opacity-70';
+      cardClass = 'bg-surface-container-low rounded-xl p-4 flex-grow opacity-60 border-l-4 border-transparent';
+    }
+
+    const statusBadge = isUnlocked 
+      ? '<span class="text-xs bg-secondary-container text-on-secondary-container px-2 py-0-5 rounded-full">Unlocked</span>'
+      : isCurrent
+      ? '<span class="text-xs bg-primary text-on-primary px-2 py-0-5 rounded-full animate-pulse">Current Target</span>'
+      : '<span class="text-xs text-on-surface-variant font-bold">Locked</span>';
+
+    const progressBar = isCurrent ? `
+      <div class="mt-4 space-y-2">
+        <div class="flex justify-between text-xs text-primary">
+          <span>Progress</span>
+          <span>${Math.round(getMilestoneProgress(m))}%</span>
+        </div>
+        <div class="w-full bg-surface-container-low rounded-full h-2-5 overflow-hidden">
+          <div class="bg-primary h-full rounded-full transition-all dur-1000" style="width: ${getMilestoneProgress(m)}%"></div>
+        </div>
+      </div>
+    ` : '';
+
+    const pattern = isUnlocked ? '<div class="absolute inset-0 success-pattern opacity-5 pointer-events-none"></div>' : '';
+
+    return `
+      <div class="flex gap-6 relative card-press transition-transform cursor-pointer" onclick="milestoneTap(this)">
+        <div class="flex-shrink-0 z-10">
+          <div class="w-12 h-12 rounded-full flex items-center justify-center transition-transform active:scale-90 dur-200 ${iconClass}" style="box-shadow: 0 0 0 4px var(--background);">
+            ${iconHtml}
+          </div>
+        </div>
+        <div class="${cardClass}">
+          ${pattern}
+          <div class="flex justify-between items-start mb-1 relative z-10">
+            <span class="text-label-md ${isUnlocked ? 'text-secondary' : isCurrent ? 'text-primary' : 'text-on-surface-variant'}">Day ${m.day}</span>
+            ${statusBadge}
+          </div>
+          <h4 class="text-headline-md ${isLocked ? 'text-on-surface-variant' : 'text-on-surface'} relative z-10">${m.title}</h4>
+          <p class="text-body-sm ${isLocked ? 'text-on-surface-variant italic' : 'text-on-surface-variant'} mt-1 relative z-10">${m.desc}</p>
+          ${progressBar}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const timelineActive = document.getElementById('timeline-active');
+  const currentIndex = MILESTONES.indexOf(getCurrentMilestone());
+  const percentComplete = (currentIndex / (MILESTONES.length - 1)) * 100;
+  setTimeout(() => { timelineActive.style.height = Math.min(100, percentComplete) + '%'; }, 100);
+}
+
+function milestoneTap(el) {
+  el.style.transform = 'scale(0.98)';
+  setTimeout(() => el.style.transform = 'scale(1)', 150);
+}
+
+// ==================== ACTIONS ====================
+function openRelapseModal() {
+  const modal = document.getElementById('relapse-modal');
+  modal.classList.remove('hidden');
+  setTimeout(() => { modal.style.opacity = '1'; }, 10);
+}
+
+function closeRelapseModal() {
+  const modal = document.getElementById('relapse-modal');
+  modal.style.opacity = '0';
+  setTimeout(() => { modal.classList.add('hidden'); }, 300);
+}
+
+function confirmRelapse() {
+  const days = getDaysSober();
+  if (days > appState.bestStreak) appState.bestStreak = days;
+  appState.totalDays += days;
+  appState.lastRelapse = new Date().toISOString();
+  appState.startDate = new Date().toISOString().split('T')[0];
+  document.getElementById('reflection-area').classList.remove('hidden');
+  saveState();
+  closeRelapseModal();
+  updateAllScreens();
+  showToast('Streak reset. Every day is a new beginning.');
+  document.getElementById('progress-ring').style.strokeDashoffset = 276.46;
+}
+
+function saveReflection() {
+  const note = document.getElementById('reflection-notes').value.trim();
+  if (!note) { showToast('Please write a reflection first'); return; }
+  appState.reflections.push({ date: new Date().toISOString(), note: note });
+  saveState();
+  document.getElementById('reflection-notes').value = '';
+  document.getElementById('reflection-area').classList.add('hidden');
+  showToast('Reflection saved. Growth comes from awareness.');
+  spawnConfetti();
+}
+
+function saveStartDate() {
+  const btn = document.getElementById('save-button');
+  const btnText = document.getElementById('save-btn-text');
+  const dateInput = document.getElementById('start-date').value;
+  if (!dateInput) { showToast('Please select a valid date'); return; }
+  btnText.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span>';
+  btn.disabled = true;
+  setTimeout(() => {
+    appState.startDate = dateInput;
+    saveState();
+    updateAllScreens();
+    btnText.textContent = 'Save Journey Start';
+    btn.disabled = false;
+    showToast('Journey start date updated successfully');
+    spawnConfetti();
+  }, 800);
+}
+
+function toggleReminder() {
+  appState.reminders = !appState.reminders;
+  saveState();
+  updateSettingsScreen();
+  showToast(appState.reminders ? 'Reminders enabled' : 'Reminders disabled');
+}
+
+function openResetModal() {
+  const modal = document.getElementById('reset-modal');
+  modal.classList.remove('hidden');
+  setTimeout(() => { modal.style.opacity = '1'; }, 10);
+}
+
+function closeResetModal() {
+  const modal = document.getElementById('reset-modal');
+  modal.style.opacity = '0';
+  setTimeout(() => { modal.classList.add('hidden'); }, 300);
+}
+
+function confirmResetAll() {
+  appState = { startDate: new Date().toISOString().split('T')[0], bestStreak: 0, totalDays: 0, reminders: true, reflections: [], lastRelapse: null };
+  saveState();
+  closeResetModal();
+  updateAllScreens();
+  showToast('All data has been reset. Fresh start!');
+}
+
+// ==================== UI HELPERS ====================
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  const msg = document.getElementById('toast-message');
+  msg.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.pointerEvents = 'auto';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.pointerEvents = 'none';
+    toast.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 3000);
+}
+
+function spawnConfetti() {
+  const colors = ['#005da7', '#196a59', '#a3eed8', '#d4e3ff', '#a6f1db'];
+  for (let i = 0; i < 20; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.top = '-10px';
+    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+    confetti.style.animationDuration = (1 + Math.random() * 1) + 's';
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 2500);
+  }
+}
+
+function setupEventListeners() {
+  document.getElementById('relapse-modal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeRelapseModal(); });
+  document.getElementById('reset-modal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeResetModal(); });
+  document.getElementById('start-date').addEventListener('change', (e) => {
+    if (e.target.value) { appState.startDate = e.target.value; saveState(); updateAllScreens(); }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeRelapseModal(); closeResetModal(); }
+  });
+}
+
+// ==================== START ====================
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
